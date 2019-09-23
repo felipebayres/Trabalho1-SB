@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+
 #include "PreProcessamento.hpp"
 
 using namespace std;

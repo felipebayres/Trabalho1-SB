@@ -12,19 +12,13 @@ void PreProcessamento(string NomeArquivo){
     }
     while(getline(Arquivo, linha)){
         linha = RetiraComentarios(linha);
-        linha = TransformaMaiusculo(linha);
-        cout << linha << endl;
+        if(!linha.empty()){
+            linha = TransformaMaiusculo(linha);
+            cout << linha << endl;
+        }
     }
 }
-
-
-
-
-
-
-
-
-
+// Funcao que retira os comentarios do código e retira as tabulacoes do comeco do codigo
 string RetiraComentarios(string linha){
     int i = 0,posicao = 0,AchouComentario = 0,QuantidadeApagar = 0;
     
@@ -39,8 +33,20 @@ string RetiraComentarios(string linha){
     QuantidadeApagar = linha.size() - posicao;
     if (AchouComentario == 1){
         linha.erase(posicao,QuantidadeApagar);
+        
+        
     }
-
+    i = 0;
+    while(i < linha.size()){
+            if(isspace(linha[i])){
+                linha.erase(i,1);
+            }
+            else
+            {
+                    break;
+            }
+            
+        }
 
     return linha;
 }
@@ -53,3 +59,4 @@ string TransformaMaiusculo(string linha){
 
     return linha;
 }
+
