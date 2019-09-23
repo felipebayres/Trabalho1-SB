@@ -1,8 +1,5 @@
-
 #include "PreProcessamento.hpp"
-
 using namespace std;
-
 int main (int argc, char** argv) {
     string NomeArquivo;
     if (argc < 2){
