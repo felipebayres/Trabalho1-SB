@@ -12,6 +12,7 @@ void PreProcessamento(string NomeArquivo){
     }
     while(getline(Arquivo, linha)){
         linha = RetiraComentarios(linha);
+        linha = TransformaMaiusculo(linha);
         cout << linha << endl;
     }
 }
@@ -44,4 +45,11 @@ string RetiraComentarios(string linha){
     return linha;
 }
 
+string TransformaMaiusculo(string linha){
+    // convert string to upper case
+    std::for_each(linha.begin(), linha.end(), [](char & c){
+        c = ::toupper(c);
+    });
 
+    return linha;
+}
