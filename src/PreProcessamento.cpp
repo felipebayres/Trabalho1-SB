@@ -1,4 +1,6 @@
-#include <bits/stdc++.h>
+#include <string.h>
+#include <iostream>
+#include <fstream>
 #include "PreProcessamento.hpp"
 using namespace std;
 
@@ -38,6 +40,11 @@ string RetiraComentarios(string linha){
     QuantidadeApagar = linha.size() - posicao;
     if (AchouComentario == 1){
         linha.erase(posicao,QuantidadeApagar);
+        i = 0;
+        while(i < linha.size()){
+            //if(isspace(linha))
+
+        }
     }
 
 
