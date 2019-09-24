@@ -8,5 +8,6 @@
 using namespace std;
 void PreProcessamento(string NomeArquivo);
 string RetiraComentarios(string linha);
-bool VerificaDiretiva(string linha);
+int VerificaDiretiva(string linha);
 void DiretivasEQU(string linha);
+bool DiretivasIF(string linha);
