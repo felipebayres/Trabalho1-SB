@@ -1,6 +1,4 @@
-#include <string.h>
-#include <iostream>
-#include <fstream>
+#include <bits/stdc++.h>
 #include "PreProcessamento.hpp"
 using namespace std;
 
@@ -14,8 +12,10 @@ void PreProcessamento(string NomeArquivo){
     }
     while(getline(Arquivo, linha)){
         linha = RetiraComentarios(linha);
-        if(!linha.empty())
+        if(!linha.empty()){
+            linha = TransformaMaiusculo(linha);
             cout << linha << endl;
+        }
     }
 }
 // Funcao que retira os comentarios do código e retira as tabulacoes do comeco do codigo
@@ -51,4 +51,12 @@ string RetiraComentarios(string linha){
     return linha;
 }
 
+string TransformaMaiusculo(string linha){
+    // convert string to upper case
+    std::for_each(linha.begin(), linha.end(), [](char & c){
+        c = ::toupper(c);
+    });
+
+    return linha;
+}
 
