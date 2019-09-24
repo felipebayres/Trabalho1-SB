@@ -3,7 +3,7 @@ SECTION TEXT
 ;
 INPUT OLD_DATA ;Teste de comentario
 LOAD OLD_DATA
-L1:;Teste de novo
+L1: 
 DIV DOIS
 STORE  NEW_DATA
 MULT DOIS

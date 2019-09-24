@@ -15,5 +15,6 @@ SECTION DATA
 		SPACE
 	H:		
 		SPACE
-	R:		SPACE
+	R:		
+	SPACE
 	DOIS:	CONST		2

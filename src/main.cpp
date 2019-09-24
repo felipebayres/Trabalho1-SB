@@ -8,9 +8,8 @@ int main (int argc, char** argv) {
         return 0;
     }   
     NomeArquivo = argv[1];
-
     NomeArquivoPreProcessado = PreProcessamento(NomeArquivo);
-
+    MontadorUmaPassada(NomeArquivoPreProcessado);
 
     return 0;
 }

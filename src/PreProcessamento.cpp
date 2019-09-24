@@ -13,7 +13,6 @@ string PreProcessamento(string NomeArquivo){
     string linha,Aux,Aux2;
     // É uma flag que se estiver false ela nao imprime a linha no .txt
     bool FlagIF = true;
-    bool FlagRotulo = false;
     NomeArquivoPreProcessado = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".pre";
     ofstream ArquivoPreProcessado(NomeArquivoPreProcessado);
 
@@ -62,7 +61,7 @@ string PreProcessamento(string NomeArquivo){
                 FlagIF = false;
             linha = "";
         }
-        if(!linha.empty() && FlagRotulo == false)
+        if(!linha.empty())
             ArquivoPreProcessado << linha << endl;
     
     }
