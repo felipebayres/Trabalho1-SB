@@ -6,40 +6,70 @@
 using namespace std;
 map <string,int> MapaEQU;
 
-void PreProcessamento(string NomeArquivo){
+string PreProcessamento(string NomeArquivo){
+    string NomeArquivoPreProcessado;
     ifstream Arquivo;
     Arquivo.open(NomeArquivo);
-    string linha;
+    string linha,Aux,Aux2;
+    // É uma flag que se estiver false ela nao imprime a linha no .txt
     bool FlagIF = true;
+    bool FlagRotulo = false;
+    NomeArquivoPreProcessado = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".pre";
+    ofstream ArquivoPreProcessado(NomeArquivoPreProcessado);
+
+    if(!ArquivoPreProcessado.is_open()){
+        cout << "Não foi possivel gerar o arquivo pre-processado " << "\n";
+        return "";
+
+    }
+    
+    
     if (!Arquivo.is_open()){
         cout << "Não foi possível abrir o arquivo " << NomeArquivo << "\n";
-        return;
+        return "";
     }
     
     while(getline(Arquivo, linha)){
-
+        linha = RetiraEspacos(linha);
         linha = RetiraComentarios(linha);
+        // Verifica se há um rotulo com \n no código
+        if (linha.back() == ':'){
+            istringstream iss(linha);
+            iss >> Aux;
+            if(linha.size() == Aux.size()){
+                getline(Arquivo,Aux2);
+                Aux2 = RetiraEspacos(Aux2);
+                Aux2 = RetiraComentarios(Aux2);
+                linha = Aux + " " + Aux2;
+
+            }
+        }
+
+        // Flag que decidira se a proxima linha do if ira ser escrita
         if(!FlagIF){
             linha = "";
             FlagIF = true;
         }
+        //Verifica se a linha é uma diretiva EQU
         if (VerificaDiretiva(linha) == 1){
             DiretivasEQU(linha);
             linha = "";
         }
+        // Verifica se a linha é uma diretiva IF
         else if (VerificaDiretiva(linha) == 2){
             //Se for pra retirar a proxima linha
             if (!DiretivasIF(linha))
                 FlagIF = false;
             linha = "";
         }
-        
-        
-        if(!linha.empty())
-            cout << linha << endl;
+        if(!linha.empty() && FlagRotulo == false)
+            ArquivoPreProcessado << linha << endl;
+    
     }
+    ArquivoPreProcessado.close();
+    Arquivo.close();
+    return NomeArquivoPreProcessado;
 }
-
 
 // Funcao que retira os comentarios do código e retira as tabulacoes do comeco do codigo
 string RetiraComentarios(string linha){
@@ -91,7 +121,7 @@ int VerificaDiretiva(string linha){
     }
     return 0;
 }
-//Armazena os valores dos labels em um dicionario (map)
+//Armazena o valores dos label em um dicionario (map)
 void DiretivasEQU(string linha){
     
     int Flag = 0,FlagLabel = 0;
@@ -135,7 +165,7 @@ bool DiretivasIF(string linha){
 
     int Flag = 0;
     istringstream iss(linha);
-
+    // Percorre todas as palavra da linha
     while(iss){
         string Palavra,Label;
         iss >> Palavra;
@@ -149,6 +179,7 @@ bool DiretivasIF(string linha){
                 else 
                     return false;
             }
+            // Caso o valor da label nao tenha sido declarado antes
             else{
                 cout << "Erro! Não foi encontrado valor do label:" << Label << endl;
                 return true;
@@ -160,4 +191,16 @@ bool DiretivasIF(string linha){
         
             
     }
+}
+
+string RetiraEspacos(string linha){
+    istringstream iss(linha);
+    string LinhaNova;
+    while(iss){
+        string Palavra;
+        iss >> Palavra;
+        LinhaNova = LinhaNova + Palavra + " ";     
+    }
+    LinhaNova = LinhaNova.substr(0, LinhaNova.size()-2);
+    return LinhaNova;
 }

@@ -7,10 +7,10 @@ LDIR =../lib
 
 LIBS=-lm
 
-_DEPS = PreProcessamento.hpp
+_DEPS = PreProcessamento.hpp MontadorUmaPassada.hpp
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o PreProcessamento.o
+_OBJ = main.o PreProcessamento.o MontadorUmaPassada.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
