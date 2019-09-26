@@ -28,8 +28,9 @@ string PreProcessamento(string NomeArquivo){
     
     while(getline(Arquivo, linha)){
         linha = TransformaMaiusculo(linha);
-        linha = RetiraEspacos(linha);
         linha = RetiraComentarios(linha);
+        linha = RetiraEspacos(linha);
+        
         // Verifica se há um rotulo com \n no código
         if (linha.back() == ':'){
             istringstream iss(linha);
@@ -197,7 +198,9 @@ string RetiraEspacos(string linha){
     while(iss){
         string Palavra;
         iss >> Palavra;
-        LinhaNova = LinhaNova + Palavra + " ";     
+        LinhaNova = LinhaNova + Palavra;
+        if(!LinhaNova.empty())   
+            LinhaNova = LinhaNova + " ";  
     }
     LinhaNova = LinhaNova.substr(0, LinhaNova.size()-2);
     return LinhaNova;

@@ -7,5 +7,16 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+class Tabela{
+public:
+    string Simbolo;
+    int valor;
+    bool definido = false;
+    vector<int> ListaAparicoes;
+};
+
+
 void MontadorUmaPassada(string NomeArquivo);
 bool ValidaToken(string token);
+bool ValidaLabel(string Label);
+int ValidaInstrucao(string instrucao);
