@@ -7,8 +7,8 @@ SECTION TEXT	;linha dos dados
 		MuLT		H
 		IF TRIANGULO
 		DIV		DOIS
-		STORE		r
-		OUTPUT	R
+		STORE		r+5
+		OUTPUT	R+2
 		STOP
 SECTION DATA
 	B:		
@@ -16,5 +16,5 @@ SECTION DATA
 	H:		
 		SPACE
 	R:		
-	SPACE
+	SPACE 10
 	DOIS:	CONST		2
