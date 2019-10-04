@@ -2,9 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include "MontadorUmaPassada.hpp"
-map<string,int> Simbolos;
-vector<list<int>> Lista;
-vector<Tabela> TabelaSimbolos;
+map<string,TabelaSimbolos> TabelaDeSimbolos;
+
 void MontadorUmaPassada(string NomeArquivo){
     ifstream Arquivo;
     Arquivo.open(NomeArquivo);
@@ -50,25 +49,24 @@ void MontadorUmaPassada(string NomeArquivo){
                     palavra = palavra.substr(0, palavra.size()-1);
                     //Verifica se o label é valido
                     if(ValidaToken(palavra)){
-                        //Verifica se o label ja foi definido antes
-                        if(Simbolos.count(palavra) != 1){
-                            Tabela Aux;
-                            Aux.Simbolo = palavra;
-                            Aux.definido = true;
-                            Aux.valor = ContadorLinhas;
-                            Simbolos[palavra] = ContadorLinhas;
-                            TabelaSimbolos.push_back(Aux);
-
+                        //Verifica se o label ja foi visto antes
+                        if(TabelaDeSimbolos.count(palavra) == 1){
+                            if (TabelaDeSimbolos[palavra].definido == false)
+                                TabelaDeSimbolos[palavra].definido == true;
+                            else
+                            {
+                                cout << "Simbolo na linha " << ContadorLinhas << " ja foi definido antes" << endl;    
+                            }
                         }
+                        //Se o simbolo nao tiver na tabela ainda
                         else {
-                            cout << "Simbolo na linha " << ContadorLinhas << " ja foi definido antes" << endl;
+                            TabelaDeSimbolos[palavra].definido = true;
+                            TabelaDeSimbolos[palavra].Tipo = 0;
                         }
                     }
+                    //Caso o label nao seja valido
                     else{
                         cout << "Linha:" << ContadorLinhas << endl;
-
-
-
                     }
                     FlagLabel = true;
                     i++;
@@ -133,26 +131,21 @@ void MontadorUmaPassada(string NomeArquivo){
                     l++;
                     if(ValidaToken(palavra)){
                         //Verifica se o label ja foi definido antes
-                        if(Simbolos.count(palavra) != 1){
-                            
-                            
-
+                        if(TabelaDeSimbolos.count(palavra) == 1){
+                            if(TabelaDeSimbolos[palavra].definido == true){}
+                                
+                            else
+                                TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);  
                         }
                         //Se nao foi definido antes é escrito na tabela de simbolos
                         else {
-                            Tabela Aux;
-                            Aux.Simbolo = palavra;
-                            Aux.definido = false;
-                            Aux.valor = ContadorLinhas;
-                            Simbolos[palavra] = ContadorLinhas;
-                            TabelaSimbolos.push_back(Aux);
+                            TabelaDeSimbolos[palavra].definido = false;
+                            TabelaDeSimbolos[palavra].Valor = -1;
+                            TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);
                         }
                     }
                     else{
                         cout << "Linha:" << ContadorLinhas << endl;
-
-
-
                     }
                 }
                 // Para debuggar a quantidade de espacos se for um vetor
@@ -192,7 +185,7 @@ void MontadorUmaPassada(string NomeArquivo){
                     //Verifica se o label é valido   
                     if(ValidaToken(palavra)){
                         //Verifica se o label ja foi definido antes
-                        if(Simbolos.count(palavra) != 1){
+                        if(TabelaDeSimbolos.count(palavra) != 1){
                             
                         }
                         else {
