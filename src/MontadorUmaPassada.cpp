@@ -9,16 +9,23 @@ void MontadorUmaPassada(string NomeArquivo){
     Arquivo.open(NomeArquivo);
     string linha;
     bool FlagText = false , FlagData = false, FlagLabel = false;
-    
     int ContadorLinhas = 0;
     
+    //string NomeArquivoObjeto;
+    //NomeArquivoObjeto = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".obj";
+    //ofstream ArquivoObjeto(NomeArquivoObjeto);
+    vector<string> VetorObjeto;
+    //if(!ArquivoObjeto.is_open()){
+    //    cout << "Não foi possivel gerar o arquivo objeto " << "\n";
+    //    return ;
+    //}
     if (!Arquivo.is_open()){
         cout << "Não foi possível abrir o arquivo pre-processado " << NomeArquivo << "\n";
         return ;
     }
     getline(Arquivo, linha);
     while(Arquivo.peek() != EOF){
-
+        
         if (linha.compare("SECTION TEXT") == 0 && FlagText == false){
             FlagText = true;
             while(getline(Arquivo, linha)){
@@ -51,8 +58,11 @@ void MontadorUmaPassada(string NomeArquivo){
                     if(ValidaToken(palavra)){
                         //Verifica se o label ja foi visto antes
                         if(TabelaDeSimbolos.count(palavra) == 1){
-                            if (TabelaDeSimbolos[palavra].definido == false)
-                                TabelaDeSimbolos[palavra].definido == true;
+                            //Verifica se o label esta definido
+                            if (TabelaDeSimbolos[palavra].definido == false){
+                                TabelaDeSimbolos[palavra].definido = true;
+                                TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
+                            }
                             else
                             {
                                 cout << "Simbolo na linha " << ContadorLinhas << " ja foi definido antes" << endl;    
@@ -62,6 +72,7 @@ void MontadorUmaPassada(string NomeArquivo){
                         else {
                             TabelaDeSimbolos[palavra].definido = true;
                             TabelaDeSimbolos[palavra].Tipo = 0;
+                            TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
                         }
                     }
                     //Caso o label nao seja valido
@@ -111,6 +122,11 @@ void MontadorUmaPassada(string NomeArquivo){
                     cout << "Linha:" << ContadorLinhas << endl;
 
                 }
+                ContadorLinhas++;
+                //Escreve as instrucoes no arquivo
+                VetorObjeto.push_back(to_string(numero));
+                
+                
                 // A partir daqui é feito  o tratamento dos operandos
                 int l = 0;
                 for (int j = i+1; j < v.size();j++){
@@ -128,32 +144,38 @@ void MontadorUmaPassada(string NomeArquivo){
                             VetorArgumento[l] = stoi(TamanhoVetor_str);
                         }
                     }
-                    l++;
                     if(ValidaToken(palavra)){
                         //Verifica se o label ja foi definido antes
                         if(TabelaDeSimbolos.count(palavra) == 1){
-                            if(TabelaDeSimbolos[palavra].definido == true){}
-                                
-                            else
+                            if(TabelaDeSimbolos[palavra].definido == true){
+                                //Escreve no arquivo a posicao correta se o label ja foi definido
+                                VetorObjeto.push_back(to_string(TabelaDeSimbolos[palavra].Valor + VetorArgumento[l]));
+                            }
+                            // Se ele nao estiver definido, é colocado o lugar de uso na tabela e o valor inicial do vetor  
+                            else{
                                 TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);  
+                                VetorObjeto.push_back(to_string(VetorArgumento[l]));
+                            }
                         }
                         //Se nao foi definido antes é escrito na tabela de simbolos
                         else {
+                            VetorObjeto.push_back(to_string(VetorArgumento[l]));
                             TabelaDeSimbolos[palavra].definido = false;
                             TabelaDeSimbolos[palavra].Valor = -1;
                             TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);
+                        
                         }
                     }
                     else{
                         cout << "Linha:" << ContadorLinhas << endl;
                     }
+                ContadorLinhas++;
+                l++;
                 }
                 // Para debuggar a quantidade de espacos se for um vetor
                     //cout << "instrucao:" << v[i] << endl;
                     //cout << VetorArgumento[0] << " " << VetorArgumento[1] << endl;
                 FlagLabel = false;
-                // REVER O CONTADOR QUANDO A INSTRUCAO É O COPY
-                ContadorLinhas = ContadorLinhas + tamanho;
             }
             
         }
@@ -178,18 +200,29 @@ void MontadorUmaPassada(string NomeArquivo){
                 }
                 int i = 0;
                 string palavra = v[i];
+                string Label;
                 
                 // Verifica se a primeira palavra da linha é um label
                 if(palavra.back() == ':'){
                     palavra = palavra.substr(0, palavra.size()-1);
+                    Label = palavra;
                     //Verifica se o label é valido   
                     if(ValidaToken(palavra)){
-                        //Verifica se o label ja foi definido antes
-                        if(TabelaDeSimbolos.count(palavra) != 1){
-                            
+                        //Verifica se o label ja foi visto antes
+                        if(TabelaDeSimbolos.count(palavra) == 1){
+                            //Se o label ja estiver definido
+                            if(TabelaDeSimbolos[palavra].definido == true)
+                                cout << "Label ja foi definido antes" << endl;
+                            //Se o label ainda nao estiver definido
+                            else{
+                                TabelaDeSimbolos[palavra].definido = true;
+                                TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
+
+                            }
                         }
                         else {
-                            cout << "Simbolo na linha " << ContadorLinhas << " ja foi definido antes" << endl;
+                            TabelaDeSimbolos[palavra].definido = true;
+                            TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
                         }
                     }
                     else
@@ -203,6 +236,7 @@ void MontadorUmaPassada(string NomeArquivo){
                 
                 // Verifica a diretiva presente na linha 
                 if (palavra.compare("SPACE") == 0){
+                    TabelaDeSimbolos[Label].Tipo = 2; 
                     int QuantidadeSpaces = 1;
                     //Se houver um numero em seguida da palavra SPACE
                     if(v.size() == 3)
@@ -210,11 +244,14 @@ void MontadorUmaPassada(string NomeArquivo){
                     else if (v.size() > 3){
                         cout << "Quantidade de argumentos invalidos para SPACE"<< endl;
                         cout << "Linha:" << ContadorLinhas << endl;  
-                    }     
+                    }    
+                    for(int i = 0 ; i < QuantidadeSpaces;i++)
+                        VetorObjeto.push_back("OO"); 
                     ContadorLinhas = ContadorLinhas + QuantidadeSpaces;
                 }
                 else if (palavra.compare("CONST") == 0){
                     string numero;
+                    TabelaDeSimbolos[Label].Tipo = 1;
                     bool FlagNegativo = false;
                     if (v.size() != 3){
                         cout << "Numero de argumentos para CONST invalido!" << endl;
@@ -239,6 +276,8 @@ void MontadorUmaPassada(string NomeArquivo){
                         ValorFinal = ValorFinal*(-1);
                     // Mostrar o valor do const
                     //cout << ValorFinal << endl;
+                    VetorObjeto.push_back(to_string(ValorFinal));
+                    
                     ContadorLinhas++;
 
 
@@ -259,6 +298,46 @@ void MontadorUmaPassada(string NomeArquivo){
     }
     if(FlagText == false)
         cout << "SECTION TEXT nao foi declarada!" << endl;
+    //ArquivoObjeto.close();
+    
+    //Essa parte do codigo coloca os valores dos labels que faltam no codigo
+    for(auto& Simbolo : TabelaDeSimbolos){
+	    vector<int> ListaUsos;
+        if (Simbolo.second.definido == false){
+            cout << "Simbolo nao definido";
+            cout << Simbolo.first << endl;
+        }
+        // Se todos os simbolos estiverem definidos
+        
+        
+        else{
+            //Se tiver local em que ele nao foi definido corretamente
+            if(!Simbolo.second.LugaresUsados.empty()){
+                int j = 0;
+                while(j < Simbolo.second.LugaresUsados.size()) {
+                    int PosicaoUsada = Simbolo.second.LugaresUsados[j];
+                    //Procura no VetorObjeto o local a ser substituido
+                    for(int i = 0 ; i < VetorObjeto.size() ; i++){
+                        if(PosicaoUsada == i){
+                            //cout << "Simbolo:" << Simbolo.first << " " ;
+                            //cout << "Lugar usado: " << Simbolo.second.LugaresUsados[j] << endl;
+                            //cout << "VetorObjeto["<< i<<"]"<<"="<< VetorObjeto[i] <<"+"<<Simbolo.second.Valor << endl;
+                            VetorObjeto[i] = to_string(stoi(VetorObjeto[i]) + Simbolo.second.Valor);
+                            //cout << VetorObjeto[i] << endl;
+                            break;
+                        }
+                    }
+                    j++;
+                }
+            }   
+        }
+        
+    
+    }
+    for (int i = 0 ; i < VetorObjeto.size() ; i++){
+        cout << VetorObjeto[i] << " ";
+    }
+    cout << endl;
 }
 
 int ValidaInstrucao(string instrucao){

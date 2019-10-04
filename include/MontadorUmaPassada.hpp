@@ -8,7 +8,7 @@
 using namespace std;
 
 struct  TabelaSimbolos {
-bool definido;
+bool definido = false;
 vector<int> LugaresUsados;
 // Esse campo define se ele é um endereco ou uma constante
 // 0 - Label
