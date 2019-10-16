@@ -24,3 +24,4 @@ bool ValidaToken(string token);
 bool ValidaLabel(string Label);
 bool VerificaHexa(string Numero);
 int ValidaInstrucao(string instrucao);
+void PadronizaSection(string NomeArquivo);
