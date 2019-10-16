@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sstream>
+#include <stdint.h>
 #include <bits/stdc++.h>
 
 // OPCODES do Assembly inventado:
