@@ -19,7 +19,7 @@ int Valor;
 };
 
 
-void MontadorUmaPassada(string NomeArquivo);
+string MontadorUmaPassada(string NomeArquivo);
 bool ValidaToken(string token);
 bool ValidaLabel(string Label);
 bool VerificaHexa(string Numero);

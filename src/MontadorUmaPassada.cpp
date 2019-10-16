@@ -4,7 +4,7 @@
 #include "MontadorUmaPassada.hpp"
 map<string,TabelaSimbolos> TabelaDeSimbolos;
 
-void MontadorUmaPassada(string NomeArquivo){
+string MontadorUmaPassada(string NomeArquivo){
     ifstream Arquivo;
     Arquivo.open(NomeArquivo);
     string linha;
@@ -13,17 +13,19 @@ void MontadorUmaPassada(string NomeArquivo){
     
     //Verifica se existe a secao text e coloca ela na primeira posicao
     PadronizaSection(NomeArquivo);
-    //string NomeArquivoObjeto;
-    //NomeArquivoObjeto = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".obj";
-    //ofstream ArquivoObjeto(NomeArquivoObjeto);
+    string NomeArquivoObjeto;
+    NomeArquivoObjeto = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".obj";
+    ofstream ArquivoObjeto(NomeArquivoObjeto);
+
     vector<string> VetorObjeto;
-    //if(!ArquivoObjeto.is_open()){
-    //    cout << "Não foi possivel gerar o arquivo objeto " << "\n";
-    //    return ;
-    //}
+
+    if(!ArquivoObjeto.is_open()){
+        cout << "Não foi possivel gerar o arquivo objeto " << "\n";
+        return "";
+    }
     if (!Arquivo.is_open()){
         cout << "Não foi possível abrir o arquivo pre-processado " << NomeArquivo << "\n";
-        return ;
+        return "";
     }
     getline(Arquivo, linha);
     while(Arquivo.peek() != EOF){
@@ -338,8 +340,12 @@ void MontadorUmaPassada(string NomeArquivo){
     }
     for (int i = 0 ; i < VetorObjeto.size() ; i++){
         cout << VetorObjeto[i] << " ";
+        ArquivoObjeto << VetorObjeto[i] << " ";
     }
     cout << endl;
+    ArquivoObjeto.close();
+    Arquivo.close();
+    return NomeArquivoObjeto;
 }
 
 int ValidaInstrucao(string instrucao){

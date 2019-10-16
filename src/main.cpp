@@ -1,15 +1,18 @@
 #include "PreProcessamento.hpp"
 #include "MontadorUmaPassada.hpp"
+#include "Simulador.hpp"
 using namespace std;
 int main (int argc, char** argv) {
-    string NomeArquivo,NomeArquivoPreProcessado;
-    if (argc < 2){
+    string NomeArquivo, NomeArquivoPreProcessado, NomeArquivoMontado;
+    if (argc < 3){
         cout << "Insira o nome do arquivo a ser usado!" << "\n";
         return 0;
     }   
     NomeArquivo = argv[1];
     NomeArquivoPreProcessado = PreProcessamento(NomeArquivo);
-    MontadorUmaPassada(NomeArquivoPreProcessado);
+    NomeArquivoMontado = MontadorUmaPassada(NomeArquivoPreProcessado);
+    Simulador(NomeArquivoMontado);
+
 
     return 0;
 }

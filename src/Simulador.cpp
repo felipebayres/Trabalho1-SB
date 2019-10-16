@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdint.h>
+#include <string.h>
 #include "Simulador.hpp"
 using namespace std;
 
@@ -11,10 +12,9 @@ void Simulador(string NomeArqObjeto){
   string linha;
   string espaco = " ";
   vector<int> linha_objeto; // linha do arquivo objeto
-  char codigo_char[2];
   int codigo_int;
-  char codigo[3];
-
+  char codigo_char[2] = {'\0', '\0'};
+  char codigo[3] = {'\0', '\0', '\0'};
   int contador_posicao = 0; // PC
   int linker; // auxiliar para saltos
   int ACC = 0;  // registrador acumulador
@@ -30,15 +30,16 @@ void Simulador(string NomeArqObjeto){
     {
       Arquivo.read(codigo_char, 1);
       if (!Arquivo.eof()){
-        if(espaco.compare(codigo_char)){   // se for espaço
+        if(espaco.compare(codigo_char)){   // se não for espaço
+          codigo[0] = codigo_char[0];      // primeiro dígito do codigo
           Arquivo.read(codigo_char, 1);    // lẽ próxima posição
-          if(!espaco.compare(codigo_char) || Arquivo.eof()){
-            codigo_int = stoi(string(codigo));
-						linha_objeto.push_back(codigo_int);
-          } else if(!Arquivo.eof()){
-            codigo[1] = codigo_char[0];
-						codigo_int = stoi(string(codigo));
-						linha_objeto.push_back(codigo_int);
+          if(!espaco.compare(codigo_char) || Arquivo.eof()){  // se for espaço ou fim do arquivo
+            codigo_int = stoi(string(codigo));  // finaliza o codigo convertendo pra int
+						linha_objeto.push_back(codigo_int); // põem no vetor de códigos objetos
+          } else if(!Arquivo.eof()){  // se nao for fim do arquivo
+            codigo[1] = codigo_char[0]; // completo o codigo com seu segundo dígito
+						codigo_int = stoi(string(codigo));  // converte pra int
+						linha_objeto.push_back(codigo_int); // põem no vetor de códigos objetos
           }
         }else{
           continue;
@@ -155,4 +156,5 @@ void Simulador(string NomeArqObjeto){
       default:
         break;
     }
+  }
 }

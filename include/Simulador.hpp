@@ -25,5 +25,5 @@
 
 using namespace std;
 
-void Simulador(string linha);
+void Simulador(string NomeArqObjeto);
 
