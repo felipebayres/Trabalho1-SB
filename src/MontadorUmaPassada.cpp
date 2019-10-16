@@ -11,6 +11,8 @@ void MontadorUmaPassada(string NomeArquivo){
     bool FlagText = false , FlagData = false, FlagLabel = false;
     int ContadorLinhas = 0;
     
+    //Verifica se existe a secao text e coloca ela na primeira posicao
+    PadronizaSection(NomeArquivo);
     //string NomeArquivoObjeto;
     //NomeArquivoObjeto = NomeArquivo.substr(0, NomeArquivo.size()-4) + ".obj";
     //ofstream ArquivoObjeto(NomeArquivoObjeto);
@@ -297,7 +299,7 @@ void MontadorUmaPassada(string NomeArquivo){
         }
     }
     if(FlagText == false)
-        cout << "SECTION TEXT nao foi declarada!" << endl;
+        cout << "Linha:"<< ContadorLinhas << endl;
     //ArquivoObjeto.close();
     
     //Essa parte do codigo coloca os valores dos labels que faltam no codigo
@@ -394,4 +396,38 @@ bool VerificaHexa(string s){
   return s.compare(0, 2, "0X") == 0
       && s.size() > 2
       && s.find_first_not_of("0123456789abcdefABCDEF", 2) == std::string::npos;
+}
+
+void PadronizaSection(string NomeArquivo){
+    ifstream Arquivo;
+    ofstream ArquivoNovo;
+    Arquivo.open(NomeArquivo);
+    string linha;
+    bool FlagText = false;
+    vector<string> VetorText,VetorArquivo;
+    
+    if (!Arquivo.is_open()){
+        cout << "Não foi possível abrir o arquivo pre-processado " << NomeArquivo << "\n";
+        return ;
+    }
+    while(getline(Arquivo, linha)){
+        
+        if (linha.compare("SECTION TEXT") == 0){
+            FlagText = true;
+            VetorText.push_back(linha);
+            while(getline(Arquivo, linha))
+                VetorText.push_back(linha);
+            VetorText.insert(std::end(VetorText), std::begin(VetorArquivo), std::end(VetorArquivo));
+        }
+        VetorArquivo.push_back(linha);
+
+    }
+    Arquivo.close();
+    ArquivoNovo.open(NomeArquivo,std::ofstream::out | std::ofstream::trunc);
+    if (!FlagText)
+        cout << "Section text nao declarada" << endl;
+    for(int i = 0 ; i < VetorText.size() ; i++){
+        ArquivoNovo << VetorText[i] << endl;
+    }
+    ArquivoNovo.close();
 }
