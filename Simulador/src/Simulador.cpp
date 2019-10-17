@@ -9,9 +9,9 @@ using namespace std;
 void Simulador(string NomeArqObjeto){
 
   ifstream Arquivo; //ponteiro arquivo
-  string linha;
-  vector<string> linha_objeto; // linha do arquivo objeto
-  vector<int> int_linha_objeto;
+  string linha; // linha do arquivo objeto
+  //vector<string> linha_objeto; // vector para códigos (char)
+  vector<int> int_linha_objeto; // vector para códigos (int)
 
   int contador_posicao = 0; // PC
   int linker; // auxiliar para saltos
@@ -31,7 +31,7 @@ void Simulador(string NomeArqObjeto){
       int subs_int;
       iss >> subs;
       //cout << subs << endl;
-      linha_objeto.push_back(subs);
+      //linha_objeto.push_back(subs);
       if (subs != "OO"){
         subs_int = stoi(subs);
         int_linha_objeto.push_back(subs_int);
