@@ -28,11 +28,15 @@ string MontadorUmaPassada(string NomeArquivo){
         return "";
     }
     getline(Arquivo, linha);
+    int LinhasArquivo = 1;
     while(Arquivo.peek() != EOF){
-        
+        //Conta as linhas do arquivo pre processado
         if (linha.compare("SECTION TEXT") == 0 && FlagText == false){
             FlagText = true;
+            
+            
             while(getline(Arquivo, linha)){
+                LinhasArquivo++;
                 istringstream buf(linha),aux(linha);
                 vector<string> v;
                 string auxiliar;
@@ -66,10 +70,12 @@ string MontadorUmaPassada(string NomeArquivo){
                             if (TabelaDeSimbolos[palavra].definido == false){
                                 TabelaDeSimbolos[palavra].definido = true;
                                 TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
+                                TabelaDeSimbolos[palavra].Tipo = 0;
                             }
                             else
                             {
-                                cout << "Simbolo na linha " << ContadorLinhas << " ja foi definido antes" << endl;    
+                                //cout << "Simbolo na linha " << LinhasArquivo << " ja foi definido antes" << endl;    
+                                cout<< "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl; 
                             }
                         }
                         //Se o simbolo nao tiver na tabela ainda
@@ -81,7 +87,9 @@ string MontadorUmaPassada(string NomeArquivo){
                     }
                     //Caso o label nao seja valido
                     else{
-                        cout << "Linha:" << ContadorLinhas << endl;
+                        
+                        //cout << "Linha:" << LinhasArquivo << endl;
+                        cout << "ERRO LEXICO -Linha: " << LinhasArquivo << endl;
                     }
                     FlagLabel = true;
                     i++;
@@ -95,8 +103,9 @@ string MontadorUmaPassada(string NomeArquivo){
                 
                 // Verifica se a instrucao existe no assembly inventado
                 if (numero < 0){
-                        cout << "Instrucao " << palavra << " inexistente" << endl;
-                        cout << "Linha:" << ContadorLinhas << endl;
+                        //cout << "Instrucao " << palavra << " inexistente" << endl;
+                        //cout << "Linha:" << LinhasArquivo << endl;
+                        cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
                     }
                 // Separa os argumentos da instrucao copy em dois simbolos
                 if (numero == 9){
@@ -122,9 +131,9 @@ string MontadorUmaPassada(string NomeArquivo){
                 }
                 // Verifica se tem a quantidade certa de argumentos da instrucao
                 if ((numero < 8 && tamanho != 2) || (numero == 9 && tamanho != 3) || ((numero > 9 && numero < 14) && tamanho != 2) || (numero == 14 && tamanho != 1)){
-                    cout << "Numero invalido de argumentos pra instrucao " << palavra << endl;
-                    cout << "Linha:" << ContadorLinhas << endl;
-
+                    //cout << "Numero invalido de argumentos pra instrucao " << palavra << endl;
+                    //cout << "Linha:" << LinhasArquivo << endl;
+                    cout << "ERRO SINTATICO -Linha: " << LinhasArquivo << endl;
                 }
                 ContadorLinhas++;
                 //Escreve as instrucoes no arquivo
@@ -146,12 +155,27 @@ string MontadorUmaPassada(string NomeArquivo){
                             v[j].erase(pos,v[j].size()-pos);
                             palavra = v[j];
                             VetorArgumento[l] = stoi(TamanhoVetor_str);
+                            //Guarda o maior valor de spaces que a instrucao quer mexer para verificar se o vetor tem realmente o tamanho
+                            if (TabelaDeSimbolos[palavra].QuantidadeSpace <= stoi(TamanhoVetor_str))
+                                TabelaDeSimbolos[palavra].QuantidadeSpace = stoi(TamanhoVetor_str);
                         }
                     }
                     if(ValidaToken(palavra)){
                         //Verifica se o label ja foi definido antes
                         if(TabelaDeSimbolos.count(palavra) == 1){
                             if(TabelaDeSimbolos[palavra].definido == true){
+                                //Verifica se a instrucao de jumps possui um pulo correto
+                                int Instrucao = stoi (VetorObjeto.back());
+                                if((Instrucao >= 5 && Instrucao <= 8) && TabelaDeSimbolos[palavra].Tipo != 0){
+                                    //cout << "Jump para label invalido" << endl;
+                                    //cout << "Linha:" << LinhasArquivo << endl;
+                                    cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
+                                }
+                                else if ( Instrucao >=1 && Instrucao <= 4 && TabelaDeSimbolos[palavra].Tipo == 0){
+                                    //cout << "Linha:" << LinhasArquivo << endl;
+                                    //cout << "Operacao com operando invalido" << endl;
+                                    cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
+                                }
                                 //Escreve no arquivo a posicao correta se o label ja foi definido
                                 VetorObjeto.push_back(to_string(TabelaDeSimbolos[palavra].Valor + VetorArgumento[l]));
                             }
@@ -159,6 +183,7 @@ string MontadorUmaPassada(string NomeArquivo){
                             else{
                                 TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);  
                                 VetorObjeto.push_back(to_string(VetorArgumento[l]));
+                                TabelaDeSimbolos[palavra].LinhasUsadas.push_back(LinhasArquivo);
                             }
                         }
                         //Se nao foi definido antes é escrito na tabela de simbolos
@@ -167,11 +192,14 @@ string MontadorUmaPassada(string NomeArquivo){
                             TabelaDeSimbolos[palavra].definido = false;
                             TabelaDeSimbolos[palavra].Valor = -1;
                             TabelaDeSimbolos[palavra].LugaresUsados.push_back(ContadorLinhas);
+                            TabelaDeSimbolos[palavra].LinhasUsadas.push_back(LinhasArquivo);
+                            
                         
                         }
                     }
                     else{
-                        cout << "Linha:" << ContadorLinhas << endl;
+                        //cout << "Linha:" << LinhasArquivo << endl;
+                        cout << "ERRO LEXICO -Linha: " << LinhasArquivo << endl;
                     }
                 ContadorLinhas++;
                 l++;
@@ -187,6 +215,7 @@ string MontadorUmaPassada(string NomeArquivo){
         if (linha.compare("SECTION DATA") == 0 && FlagData == false){
             FlagData = true;
             while(getline(Arquivo, linha)){
+                LinhasArquivo++;
                 istringstream buf(linha),aux(linha);
                 vector<string> v;
                 string auxiliar;
@@ -215,8 +244,11 @@ string MontadorUmaPassada(string NomeArquivo){
                         //Verifica se o label ja foi visto antes
                         if(TabelaDeSimbolos.count(palavra) == 1){
                             //Se o label ja estiver definido
-                            if(TabelaDeSimbolos[palavra].definido == true)
-                                cout << "Label ja foi definido antes" << endl;
+                            if(TabelaDeSimbolos[palavra].definido == true){
+                                //cout << "Label ja foi definido antes" << endl;
+                                //cout << "Linha:" << LinhasArquivo << endl;
+                                cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
+                            }
                             //Se o label ainda nao estiver definido
                             else{
                                 TabelaDeSimbolos[palavra].definido = true;
@@ -229,12 +261,17 @@ string MontadorUmaPassada(string NomeArquivo){
                             TabelaDeSimbolos[palavra].Valor = ContadorLinhas;
                         }
                     }
-                    else
-                        cout << "Linha:" << ContadorLinhas << endl;
+                    else{
+                        //cout << "Linha:" << LinhasArquivo << endl;
+                        cout << "ERRO LEXICO -Linha: " << LinhasArquivo << endl;
+                    
+                    }
                 }
-                else
-                    cout << " Comandos na Section Data devem comecar com um label" << endl;
-                
+                else{
+                    //cout << " Comandos na Section Data devem comecar com um label" << endl;
+                    //cout << "Linha:" << LinhasArquivo << endl;
+                    cout << "ERRO SINTATICO -Linha: " << LinhasArquivo << endl;
+                }
                 i++;
                 palavra = v[i];
                 
@@ -243,11 +280,16 @@ string MontadorUmaPassada(string NomeArquivo){
                     TabelaDeSimbolos[Label].Tipo = 2; 
                     int QuantidadeSpaces = 1;
                     //Se houver um numero em seguida da palavra SPACE
-                    if(v.size() == 3)
+                    if(v.size() == 3){
                         QuantidadeSpaces = stoi(v[2]);
+                        if(TabelaDeSimbolos[Label].QuantidadeSpace >= QuantidadeSpaces){
+                            //cout << "Quantidade do Vetor errada ";
+                            //cout << "-Linha:" << LinhasArquivo << endl; 
+                            cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
+                        }
+                    }
                     else if (v.size() > 3){
-                        cout << "Quantidade de argumentos invalidos para SPACE"<< endl;
-                        cout << "Linha:" << ContadorLinhas << endl;  
+                        cout << "ERRO SINTATICO -Linha: " << LinhasArquivo << endl;
                     }    
                     for(int i = 0 ; i < QuantidadeSpaces;i++)
                         VetorObjeto.push_back("OO"); 
@@ -258,8 +300,9 @@ string MontadorUmaPassada(string NomeArquivo){
                     TabelaDeSimbolos[Label].Tipo = 1;
                     bool FlagNegativo = false;
                     if (v.size() != 3){
-                        cout << "Numero de argumentos para CONST invalido!" << endl;
-                        cout << "Linha:" << ContadorLinhas << endl;
+                        //cout << "Numero de argumentos para CONST invalido!" << endl;
+                        //cout << "Linha:" << LinhasArquivo << endl;
+                        cout << "ERRO SINTATICO -Linha: " << LinhasArquivo << endl;
                     }
                     int ValorFinal = 0,ValorHexa;
                     numero = v[2]; 
@@ -278,6 +321,7 @@ string MontadorUmaPassada(string NomeArquivo){
                     }
                     if (FlagNegativo)
                         ValorFinal = ValorFinal*(-1);
+                    TabelaDeSimbolos[Label].constante = ValorFinal;
                     // Mostrar o valor do const
                     //cout << ValorFinal << endl;
                     VetorObjeto.push_back(to_string(ValorFinal));
@@ -287,29 +331,36 @@ string MontadorUmaPassada(string NomeArquivo){
 
                 }
                 else{
-                    cout << "Diretiva inexistente" << endl;
-                    cout << ContadorLinhas << endl;
+                    //cout << "Diretiva inexistente" << endl;
+                    //cout << "Linha:" << LinhasArquivo <<  endl;
+                    cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
                 }
             }
         }
         else{
             if(Arquivo.peek() != EOF){
-                cout << "Secao invalida ou ja definida:" << linha << endl;
-                cout << "Linha:" << ContadorLinhas << endl;
+                //cout << "Secao invalida ou ja definida:" << linha << endl;
+                //cout << "Linha:" << LinhasArquivo << endl;
+                cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
                 break;
             }
         }
     }
-    if(FlagText == false)
-        cout << "Linha:"<< ContadorLinhas << endl;
+    if(FlagText == false){
+        //cout << "Linha:"<< LinhasArquivo << endl;
+        cout << "ERRO SEMANTICO -Linha: " << LinhasArquivo << endl;
+    
+    }
     //ArquivoObjeto.close();
     
     //Essa parte do codigo coloca os valores dos labels que faltam no codigo
     for(auto& Simbolo : TabelaDeSimbolos){
 	    vector<int> ListaUsos;
         if (Simbolo.second.definido == false){
-            cout << "Simbolo nao definido";
-            cout << Simbolo.first << endl;
+            //cout << "Simbolo nao definido ";
+            //cout << Simbolo.first << endl;
+            //cout << "Linha:"<<  Simbolo.second.LinhasUsadas[0] << endl;
+            cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[0] << endl;
         }
         // Se todos os simbolos estiverem definidos
         
@@ -326,6 +377,43 @@ string MontadorUmaPassada(string NomeArquivo){
                             //cout << "Simbolo:" << Simbolo.first << " " ;
                             //cout << "Lugar usado: " << Simbolo.second.LugaresUsados[j] << endl;
                             //cout << "VetorObjeto["<< i<<"]"<<"="<< VetorObjeto[i] <<"+"<<Simbolo.second.Valor << endl;
+                            
+                            // Verifica se a instrucao é um jump e se o endereco é o correto
+                            int Instrucao = stoi (VetorObjeto[i-1]);
+                                if ( Instrucao >=1 && Instrucao <= 4 && Simbolo.second.Tipo == 0){
+                                    //cout << "Linha:" << Simbolo.second.LinhasUsadas[j] << endl;
+                                    //cout << "Operacao com operando invalido" << endl;
+                                    cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[j] << endl;
+                                }
+                                else if((Instrucao >= 5 && Instrucao <= 8) && Simbolo.second.Tipo != 0){
+                                    //cout << "Linha:" << Simbolo.second.LinhasUsadas[j] << endl;
+                                    //cout << "Jump para label invalido" << endl;
+                                    cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[j] << endl;
+                                }
+                                if( Instrucao == 4 && Simbolo.second.Tipo == 1 && Simbolo.second.constante == 0){
+                                    //cout << "Linha:" << Simbolo.second.LinhasUsadas[j] << endl;
+                                    //cout << "Divisao por 0" << endl;
+                                    cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[j] << endl;
+                                }
+                                // Verifica se o simbolo é uma constante
+                                if(Simbolo.second.Tipo == 1){
+                                    //Verifica se a instrucao é um load em uma constante
+                                    if (Instrucao == 12){
+                                        //cout << "Linha:" << Simbolo.second.LinhasUsadas[j] << endl;
+                                        //cout << "Modificacao do valor de uma constante" << endl;
+                                        cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[j] << endl;
+                                    
+                                    }
+                                    // Verifica se a instrucao é um copy e se o segundo operando é uma constante
+                                    if( i >= 2){
+                                        Instrucao = stoi(VetorObjeto[i-2]);
+                                        if( Instrucao == 9 ){
+                                            //cout << "Linha:" << Simbolo.second.LinhasUsadas[j] << endl;
+                                            //cout << "Modificacao do valor de uma constante" << endl;
+                                            cout << "ERRO SEMANTICO -Linha: " << Simbolo.second.LinhasUsadas[j] << endl;
+                                        }
+                                    }
+                                }
                             VetorObjeto[i] = to_string(stoi(VetorObjeto[i]) + Simbolo.second.Valor);
                             //cout << VetorObjeto[i] << endl;
                             break;
@@ -338,6 +426,7 @@ string MontadorUmaPassada(string NomeArquivo){
         
     
     }
+    // Imprime o codigo na tela para debug e no arquivo obj
     for (int i = 0 ; i < VetorObjeto.size() ; i++){
         cout << VetorObjeto[i] << " ";
         ArquivoObjeto << VetorObjeto[i] << " ";
@@ -381,16 +470,16 @@ int ValidaInstrucao(string instrucao){
 }
 bool ValidaToken(string token){
     if (token.size() > 50){
-        cout << " Tamanho da variavel ou rotulo " << token << " ultrapassa 50 caracteres" << endl;
+        //cout << " Tamanho da variavel ou rotulo " << token << " ultrapassa 50 caracteres" << endl;
         return false;
     }
     else if (isdigit(token[0])){
-        cout << "A variavel ou rotulo " << token << " possui numero no primeiro caractere" << endl;
+        //cout << "A variavel ou rotulo " << token << " possui numero no primeiro caractere" << endl;
         return false;
     }
     if (token.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos)
     {
-        cout << "Foi utilizado um caractere invalido no token " << token << endl;
+        //cout << "Foi utilizado um caractere invalido no token " << token << endl;
         return false;
     }
     return true;
