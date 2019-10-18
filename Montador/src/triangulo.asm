@@ -1,5 +1,5 @@
 TrIANGuLO: 
-			EQU 0
+			EQU 1
 SECTION TEXT	;linha dos dados
 		INPUT		B
 		INPUT		H
@@ -7,8 +7,8 @@ SECTION TEXT	;linha dos dados
 		MuLT		H
 		IF TRIANGULO
 		DIV		DOIS
-		STORE		r+5
-		OUTPUT	R+2
+		STORE		R
+		OUTPUT	R
 		STOP
 SECTION DATA
 	B:		

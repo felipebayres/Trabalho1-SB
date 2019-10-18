@@ -1,6 +1,5 @@
 #include "PreProcessamento.hpp"
 #include "MontadorUmaPassada.hpp"
-#include "Simulador.hpp"
 using namespace std;
 int main (int argc, char** argv) {
     string NomeArquivo, NomeArquivoPreProcessado, NomeArquivoMontado;
@@ -11,8 +10,6 @@ int main (int argc, char** argv) {
     NomeArquivo = argv[1];
     NomeArquivoPreProcessado = PreProcessamento(NomeArquivo);
     NomeArquivoMontado = MontadorUmaPassada(NomeArquivoPreProcessado);
-    //Simulador(NomeArquivoMontado);
-
 
     return 0;
 }

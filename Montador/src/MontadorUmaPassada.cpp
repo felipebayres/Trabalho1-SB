@@ -428,7 +428,7 @@ string MontadorUmaPassada(string NomeArquivo){
     }
     // Imprime o codigo na tela para debug e no arquivo obj
     for (int i = 0 ; i < VetorObjeto.size() ; i++){
-        cout << VetorObjeto[i] << " ";
+        //cout << VetorObjeto[i] << " ";
         ArquivoObjeto << VetorObjeto[i] << " ";
     }
     cout << endl;
