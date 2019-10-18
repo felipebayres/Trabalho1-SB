@@ -13,10 +13,12 @@ void Simulador(string NomeArqObjeto){
   string linha; // linha do arquivo objeto
   vector<int> vectorObjeto; // vector para códigos (int)
 
-  int contador_posicao = 0; // PC
+  int contador = 0; // PC
   int linker; // auxiliar para saltos
   int ACC = 0;  // registrador acumulador
   int16_t memoria[2]; // memoria simulada
+  int posOP1=0;
+  int posOP2=0;
 
   Arquivo.open(NomeArqObjeto);
   if (!Arquivo.is_open()){
@@ -34,120 +36,154 @@ void Simulador(string NomeArqObjeto){
         subs_int = stoi(subs);
         vectorObjeto.push_back(subs_int);
       }else{
-        continue;
+        subs_int = 0;
+        vectorObjeto.push_back(subs_int);
       }
     }
-    for (int i = 0; i < (vectorObjeto.size()); i++){
-      cout << vectorObjeto[i];
-    }
+    //for (int i = 0; i < (vectorObjeto.size(); i++){
+    //  cout << vectorObjeto[i];
+    //}
   }
 
-  //while(vectorObjeto.at(contador_posicao) != STOP){
-  //  switch (vectorObjeto.at(contador_posicao)){
-  //    case ADD:
-  //      ACC = ACC + vectorObjeto.at(vectorObjeto.at(++contador_posicao));
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case SUB:
-  //      ACC = ACC - vectorObjeto.at(vectorObjeto.at(++contador_posicao));
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case MUL:
-  //      ACC = ACC * vectorObjeto.at(vectorObjeto.at(++contador_posicao));
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case DIV:
-  //      ACC = ACC / vectorObjeto.at(vectorObjeto.at(++contador_posicao));
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case JMP:
-  //      linker = vectorObjeto.at(++contador_posicao);
-  //      contador_posicao = linker;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case JMPN:
-  //      if(ACC < 0){
-  //        linker = vectorObjeto.at(++contador_posicao);
-  //        contador_posicao = linker;
-  //      }else{
-  //        contador_posicao = contador_posicao + 2;
-  //      }
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case JMPP:
-  //      if(ACC > 0){
-  //        linker = vectorObjeto.at(++contador_posicao);
-  //        contador_posicao = linker;
-  //      }else{
-  //        contador_posicao = contador_posicao + 2;
-  //      }
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case JMPZ:
-  //      if(ACC == 0){
-  //        linker = vectorObjeto.at(++contador_posicao);
-  //        contador_posicao = linker;
-  //      }else{
-  //        contador_posicao = contador_posicao + 2;
-  //      }
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case COPY:
-  //      vectorObjeto.at(vectorObjeto.at(contador_posicao + 2)) = vectorObjeto.at(vectorObjeto.at(contador_posicao + 1));
-  //      memoria[0] = vectorObjeto.at(contador_posicao + 2);
-  //      memoria[1] = vectorObjeto.at(vectorObjeto.at(contador_posicao + 1));
-  //      contador_posicao = contador_posicao + 3;
-//
-  //      printf("Endereço de Memória: %d\n", memoria[0]);
-  //      printf("Valor de Memória: %d\n", memoria[1]);
-//
-  //      break;
-  //    
-  //    case LOAD:
-  //      ACC = vectorObjeto.at(vectorObjeto.at(++contador_posicao));
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-  //    
-  //    case STORE:
-  //      vectorObjeto.at(vectorObjeto.at(++contador_posicao)) = ACC;
-  //      memoria[0] = vectorObjeto.at(contador_posicao);
-  //      memoria[1] = ACC;
-  //      contador_posicao++;
-  //      break;
-//
-  //    case INPUT:
-  //      cout << "Favor inserir um valor numérico: ";
-  //      cin >> linker;
-  //      vectorObjeto.at(vectorObjeto.at(++contador_posicao)) = linker;
-  //      memoria[0] = vectorObjeto.at(contador_posicao);
-  //      memoria[1] = linker;
-  //      contador_posicao++;
-//
-  //      printf("Endereço de Memória: %d\n", memoria[0]);
-  //      printf("Valor de Memória: %d\n", memoria[1]);
-  //      break;
-//
-  //    case OUTPUT:
-  //      cout << "O valor de saída é:" << vectorObjeto.at(vectorObjeto.at(++contador_posicao)) << endl;
-  //      contador_posicao++;
-  //      printf("Valor do acumulador: %d\n", ACC);
-  //      break;
-//
-  //    default:
-  //      break;
-  //  }
-  //}
+  while(vectorObjeto.at(contador) != STOP){
+    switch (vectorObjeto.at(contador)){
+      case ADD: // 1
+        cout << "ADD:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        ACC = ACC + (vectorObjeto.at(posOP1));
+        contador++;
+        printf("Valor do acumulador: %d\n", ACC);
+        break;
+      
+      case SUB: //2
+        cout << "SUB:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        ACC = ACC - (vectorObjeto.at(posOP1));
+        contador++;
+        printf("Valor do acumulador: %d\n", ACC);
+        break;
+      
+      case MUL: //3
+        cout << "MUL:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        ACC = ACC * (vectorObjeto.at(posOP1));
+        contador++;
+        printf("Valor do acumulador: %d\n", ACC);
+        break;
+      
+      case DIV: //4
+        cout << "DIV:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        ACC = ACC / (vectorObjeto.at(posOP1));
+        contador++;
+        printf("Valor do acumulador: %d\n", ACC);
+        break;
+      
+      case JMP: //5
+        cout << "JMP:" << endl;
+        linker = vectorObjeto.at(++contador);
+        contador = linker;
+        printf("Valor do acumulador: %d\n", ACC);
+        break;
+      
+      case JMPN:  //6
+        cout << "JMPN:" << endl;
+        if(ACC < 0){
+          linker = vectorObjeto.at(++contador);
+          contador = linker;
+        }else{
+          contador = contador + 2;
+        }
+        cout << "Valor do acumulador:" << ACC << endl;
+        break;
+      
+      case JMPP:  //7
+        cout << "JMPP:"<< endl;
+        if(ACC > 0){
+          linker = vectorObjeto.at(++contador);
+          contador = linker;
+        }else{
+          contador = contador + 2;
+        }
+        cout << "Valor do acumulador:" << ACC << endl;
+        break;
+      
+      case JMPZ:  //8
+        cout << "JMPZ" << endl;
+        if(ACC == 0){
+          linker = vectorObjeto.at(++contador);
+          contador = linker;
+        }else{
+          contador = contador + 2;
+        }
+        cout << "Valor do acumulador:" << ACC << endl;
+        break;
+      
+      case COPY:  //9
+        cout << "COPY" << endl;
+        posOP1 = vectorObjeto.at(contador + 1);
+        posOP2 = vectorObjeto.at(contador + 2);
+        vectorObjeto.at(posOP2) = vectorObjeto.at(posOP1);
+        memoria[0] = posOP2;
+        memoria[1] = vectorObjeto.at(posOP2);
+        contador = contador + 3;
+
+        cout << "Endereço de memoria:" << memoria[0] << endl;
+        cout << "Valor de Memória:" << memoria[1] << endl;
+
+        break;
+      
+      case LOAD:  //10
+        cout << "LOAD:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        ACC = vectorObjeto.at(posOP1);
+        contador++;
+        cout << "Valor do acumulador:" << ACC << endl;
+        break;
+      
+      case STORE: //11
+        cout << "STORE:" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        vectorObjeto.at(posOP1) = ACC;
+        memoria[0] = posOP1;
+        memoria[1] = ACC;
+        cout << "Endereço de memoria:" << memoria[0] << endl;
+        cout << "Valor de Memória:" << memoria[1] << endl;
+        contador++;
+        break;
+
+      case INPUT: //12
+        cout << "INPUT:" << endl;
+
+        cout << "Favor inserir um valor numérico: ";
+        cin >> linker;
+        posOP1 = vectorObjeto.at(++contador);
+        vectorObjeto.at(posOP1) = linker;
+        memoria[0] = posOP1;
+        memoria[1] = linker;
+        contador++;
+
+        cout << "Endereço de Memória:" << memoria[0] << endl;
+        cout << "Valor de Memória:" << memoria[1] << endl;
+        break;
+
+      case OUTPUT:  //13
+        cout << "OUTPUT" << endl;
+        posOP1 = vectorObjeto.at(++contador);
+        cout << "O valor de saída é:" << vectorObjeto.at(posOP1) << endl;
+        contador++;
+        break;
+
+      default:
+        break;
+    }
+    int i=0;
+    cout << "Vetor objeto:";
+    for (i = 0; i < vectorObjeto.size(); i++)
+    {
+      cout << vectorObjeto[i] << " ";
+    }
+    cout << endl;
+    
+  }
 }
