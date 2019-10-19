@@ -1,7 +1,7 @@
 # Trabalho1-SB
 
 Felipe Brito Ayres - 16/0119537
-Vítor Ribas Bandeira - 16014842
+Vítor Ribas Bandeira - 16/0148421
  
  O trabalho foi feito no ambiente do Linux(Ubuntu) e foi utilizado o MakeFile.
   
