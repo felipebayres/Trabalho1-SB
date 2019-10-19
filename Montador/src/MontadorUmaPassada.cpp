@@ -520,7 +520,7 @@ void PadronizaSection(string NomeArquivo){
     Arquivo.close();
     ArquivoNovo.open(NomeArquivo,std::ofstream::out | std::ofstream::trunc);
     if (!FlagText)
-        cout << "Section text nao declarada" << endl;
+        cout << "ERRO SEMANTICO" << endl;
     for(int i = 0 ; i < VetorText.size() ; i++){
         ArquivoNovo << VetorText[i] << endl;
     }
