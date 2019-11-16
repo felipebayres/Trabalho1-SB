@@ -19,3 +19,5 @@ Vítor Ribas Bandeira - 16/0148421
       1.Entre na pasta \Simulador\src pelo terminal
       2. Digite make no terminal;
       3. Digite ./simulador -NomeArquivo-.obj e aperte enter
+
+OBS.: Para o Simulador e Montador, criar o diretório \obj em \src caso não exista
