@@ -25,11 +25,13 @@ string PreProcessamento(string NomeArquivo){
         cout << "Não foi possível abrir o arquivo " << NomeArquivo << "\n";
         return "";
     }
-    
+    int ContadorLinhas = 0;
     while(getline(Arquivo, linha)){
+        ContadorLinhas++;
         linha = TransformaMaiusculo(linha);
-        linha = RetiraEspacos(linha);
         linha = RetiraComentarios(linha);
+        linha = RetiraEspacos(linha);
+        
         // Verifica se há um rotulo com \n no código
         if (linha.back() == ':'){
             istringstream iss(linha);
@@ -179,7 +181,8 @@ bool DiretivasIF(string linha){
             }
             // Caso o valor da label nao tenha sido declarado antes
             else{
-                cout << "Erro! Não foi encontrado valor do label:" << Label << endl;
+                //cout << "Erro! Não foi encontrado valor do label:" << Label << endl;
+                cout << "ERRO SEMANTICO"<< endl;
                 return true;
             }
         }
@@ -197,7 +200,9 @@ string RetiraEspacos(string linha){
     while(iss){
         string Palavra;
         iss >> Palavra;
-        LinhaNova = LinhaNova + Palavra + " ";     
+        LinhaNova = LinhaNova + Palavra;
+        if(!LinhaNova.empty())   
+            LinhaNova = LinhaNova + " ";  
     }
     LinhaNova = LinhaNova.substr(0, LinhaNova.size()-2);
     return LinhaNova;

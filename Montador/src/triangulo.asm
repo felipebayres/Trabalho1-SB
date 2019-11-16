@@ -1,10 +1,10 @@
-	TRIANGULO: 
-			EQU 0
-SECTION TEXT
+TrIANGuLO: 
+			EQU 1
+SECTION TEXT	;linha dos dados
 		INPUT		B
 		INPUT		H
 		LOAD		B
-		MULT		H
+		MuLT		H
 		IF TRIANGULO
 		DIV		DOIS
 		STORE		R
@@ -16,5 +16,5 @@ SECTION DATA
 	H:		
 		SPACE
 	R:		
-	SPACE
+	SPACE 5 
 	DOIS:	CONST		2
